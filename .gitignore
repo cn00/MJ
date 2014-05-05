@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ignore thumbnails created by windows
 Thumbs.db
 
@@ -111,3 +112,26 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 cmake_install.cmake
+=======
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+>>>>>>> 572da6b023c97071d571971153f7e0f912ab6c44
