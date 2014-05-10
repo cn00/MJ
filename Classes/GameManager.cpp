@@ -1,27 +1,55 @@
 #include "GameManager.h"
 
-vector< string > GameManager::sqlRecords;
+/*
+ column_name1,	column_name2,	column_name3	
+ value11,		value12,		value13
+ value21,		value22,		value23
+ value31,		value32,		value33
+ */
+map<int/*column_name*/, vector<string>/*column_value*/ > GameManager::sqlRecords;
 string GameManager::dbpath;
+sqlite3 * GameManager::pDB = nullptr;
+
 bool GameManager::showMsg( string id )
 {
 	return "";
 }
 
+const string language[]={
+    "en",	//ENGLISH = 0,
+    "cn",	//CHINESE,
+    "fr",	//FRENCH,
+    "it",	//ITALIAN,
+    "ge",	//GERMAN,
+    "sp",	//SPANISH,
+    "du",	//DUTCH,
+    "ru",	//RUSSIAN,
+    "ko",	//KOREAN,
+    "ja",	//JAPANESE,
+    "hu",	//HUNGARIAN,
+    "por",	//PORTUGUESE,
+    "ar",	//ARABIC,
+    "no",	//NORWEGIAN,
+    "pol",	//POLISH
+};
+int languaget = int(LanguageType::CHINESE);
+
 std::string GameManager::getText( string id, string key )
 {
 	sqlRecords.clear();
-	sqlCommand((char*)(" select " + key + " from text where id = "+ id +" ;").c_str(), GameManager::sqlLoadRecord);//Ωµ–Ú DESC, …˝–Ú ASC
-	if(sqlRecords.size() > 0)return sqlRecords[0];
+	sqlCommand((char*)(" select " + key + " from text where id = "+ id +" ;").c_str(), GameManager::sqlLoadRecord);
+	if(sqlRecords.size() > 0)return sqlRecords[languaget][0];
 	else return "";
 }
 
 GameManager::GameManager():user(new User())
 {
-	dbpath = CCFileUtils::getInstance()->getWritablePath() + ("data.db3");
+	dbpath = CCFileUtils::getInstance()->getWritablePath() + ("data.db");
 #if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	dbpath = CCFileUtils::sharedFileUtils()->fullPathForFilename("data.db3");
+	dbpath = CCFileUtils::sharedFileUtils()->fullPathForFilename("data.db");
 #endif
-	sqlite3_result = sqlite3_open(dataName, &pDB); 
+	char* errMsg;
+	int sqlite3_result = sqlite3_open(dbpath.c_str(), &pDB);
 	if( sqlite3_result != SQLITE_OK )
 		CCLOG( "Open database failed, errorcode :%d, error msg:%s" , sqlite3_result, errMsg );
 	else CCLOG( "Open database successful" );
@@ -32,30 +60,33 @@ GameManager::GameManager():user(new User())
 GameManager::~GameManager()
 {
 	delete user;
-	sqlite3_close(pDB); 
+	sqlite3_close(pDB);
 	CCLOG("~sqlite3_close(pDB);");
 }
 
-void GameManager::sqlCommand( char *condition, int (*callback)(void*,int,char**,char**) )
+void GameManager::sqlCommand( const char *condition, int (*callback)(void*,int,char**,char**) )
 {
-	sqlite3_result = sqlite3_exec( pDB, condition ,callback, 0, &errMsg );
-	CCLOG("SqliteAction::sqlCommand = %s, errorMsg = %s", condition, errMsg);
+	char* sqlitemsg;
+	sqlite3_exec( pDB, condition ,callback, 0, &sqlitemsg );
+	CCLOG("SqliteAction::sqlCommand = %s, sqlitemsg‰ø°ÊÅØ = %s", condition, sqlitemsg);
 }
 
 int GameManager::sqlLoadRecord( void *para, int n_column, char ** column_value, char ** column_name )
 {
-	string param = "";
-	for ( int i = 0; i < n_column; ++i )
+	vector<string> param;
+	for ( int i = 1; i < n_column; ++i )
 	{
-		param += column_value[i];
-		param += "    ";
+		CCLOG("SqliteAction::sqlLoadRecord  %s, %s, %zu",column_name[i], column_value[i], strlen(column_value[i]));
+		param.push_back(column_value[i]);
 	}
-	sqlRecords.push_back(param);
+	sqlRecords.insert(make_pair(atoi(column_value[0]), param));
+	
+//	sqlRecords.pushBack(param);
 // 	CCLOG("SqliteAction::sqlLoadRecord  %s",param.c_str());
 	return 0;  
 }
 
-void GameManager::sqlInsert( char *table, int n_column, const char **column_name, const char **column_value )
+void GameManager::sqlInsert( const char *table, int n_column, const char **column_name, const char **column_value )
 {
 	string sqlstr = string(" create table if not exists ") + table + "(";
 	for (int i = 0; i < n_column; ++i)
@@ -63,7 +94,8 @@ void GameManager::sqlInsert( char *table, int n_column, const char **column_name
 		sqlstr += " "+string(column_name[i])+" char(30)";
 		sqlstr += (i < n_column-1) ? ", " : ", rdatet DATETIME NOT NULL DEFAULT (datetime('now','localtime') ) )";
 	}
-	sqlite3_result = sqlite3_exec( pDB, sqlstr.c_str() , NULL, NULL, &errMsg ); 
+	char* errMsg;
+	int sqlite3_result = sqlite3_exec( pDB, sqlstr.c_str() , NULL, NULL, &errMsg );
 	CCLOG("SqliteAction::sqlInsertRecord sqlstr = %s, &errMsg = %s", sqlstr.c_str(), errMsg);
 
 	sqlstr = string(" insert into ") + table + ("( ");
@@ -80,6 +112,6 @@ void GameManager::sqlInsert( char *table, int n_column, const char **column_name
 	}
 	sqlstr += string(")");
 	CCLOG("SqliteAction::sqlInsertRecord sqlstr = %s", sqlstr.c_str());
-	sqlite3_result = sqlite3_exec( pDB, sqlstr.c_str() , NULL, NULL, &errMsg ); 
+	sqlite3_result = sqlite3_exec( pDB, sqlstr.c_str() , NULL, NULL, &errMsg );
 	if(sqlite3_result != SQLITE_OK )CCLOG( "insrt failed:%d, errMsg:%s" , sqlite3_result, errMsg ); 
 }

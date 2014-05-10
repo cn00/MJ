@@ -9,11 +9,9 @@ using namespace std;
 #include "cocos-ext.h"
 #include "Box2D/Box2D.h"
 #include "SimpleAudioEngine.h"
-using namespace cocos2d;
-using namespace extension;
 
 //navy
 #include "VisibleRect.h"
 #include "Singleton.h"
-#include "TemplateCreate.h"
+//#include "TemplateCreate.h"
 

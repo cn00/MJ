@@ -16,7 +16,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLView::create("MJGame");
+        if(0)glview = GLView::createWithFullScreen("MJGame");
+        else glview = GLView::create("MJGame");
         director->setOpenGLView(glview);
     }
 
@@ -25,9 +26,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
+	
+	GameManager::getInstance();
 
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    auto scene = HelloWorld::scene();
 
     // run
     director->runWithScene(scene);

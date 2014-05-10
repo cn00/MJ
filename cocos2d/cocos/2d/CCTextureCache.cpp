@@ -318,13 +318,13 @@ Texture2D * TextureCache::addImage(const std::string &path)
                 // cache the texture file name
                 VolatileTextureMgr::addImageTexture(texture, fullpath);
 #endif
-                // texture already retained, no need to re-retain it
             }
             else
             {
 				texture->initWithString(fullpath.c_str(), "", 12);
                 CCLOG("cocos2d: Couldn't create texture for file:%s in TextureCache, use filename instead.", path.c_str());
             }
+			// texture already retained, no need to re-retain it
 			_textures.insert( std::make_pair(fullpath, texture) );
         } while (0);
     }

@@ -63,6 +63,11 @@ public:
      */
     void setText(const std::string& text);
 
+	/**
+	 *@navy 2014-05-08
+	 */
+	void setMaxLineWidth(unsigned int width){_labelRenderer->setMaxLineWidth(width);}
+	
     /**
      * Gets the string value of label.
      *

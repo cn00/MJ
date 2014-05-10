@@ -2,11 +2,11 @@
 #include "stdafx.h"
 
 #define createScene( _T_ )					\
-static CCScene* scene()						\
+static Scene* scene()						\
 {											\
-	CCScene * scene = NULL;					\
+	Scene * scene = NULL;					\
 	do{										\
-		scene = CCScene::create();			\
+		scene = Scene::create();			\
 		CC_BREAK_IF(! scene);				\
 		_T_ *layer = _T_::create();			\
 		CC_BREAK_IF(! layer);				\
@@ -79,19 +79,19 @@ public:
 		sprintf(c, "%f", f);
 		return string(c);
 	}
-	template< typename T > T* create( CCPoint position = CCPointZero , CCPoint anchor = CCPointZero );
+	template< typename T > T* create( Point position = Point::ZERO , Point anchor = Point::ZERO );
 
-	template< typename T > T* frameMenu(const char *normal, const char *over, CCObject* target, SEL_MenuHandler selector,
-		CCPoint position = CCPointZero, int tag = -1);
-	template< typename T > T* frameMenu(const char *normal, const char *over, const char *disable, CCObject* target, SEL_MenuHandler selector,
-		CCPoint position = CCPointZero, int tag = -1);
+	template< typename T > T* frameMenu(const char *normal, const char *over, Ref* target, SEL_MenuHandler selector,
+										Point position = Point::ZERO, int tag = -1);
+	template< typename T > T* frameMenu(const char *normal, const char *over, const char *disable, Ref* target, SEL_MenuHandler selector,
+		Point position = Point::ZERO, int tag = -1);
 
-	template< typename T > T* frameSprite( const char *frameName, CCPoint position = CCPointZero, CCPoint anchor = CCPointZero );
-	template< typename T > T* fileSprite( const char *fileName, CCPoint position = CCPointZero, CCPoint anchor = CCPointZero );
+	template< typename T > T* frameSprite( const char *frameName, Point position = Point::ZERO, Point anchor = Point::ZERO );
+	template< typename T > T* fileSprite( const char *fileName, Point position = Point::ZERO, Point anchor = Point::ZERO );
 };
 
 template< typename T >
-T* TpCreate::create( CCPoint position, CCPoint anchor )
+T* TpCreate::create( Point position, Point anchor )
 {
 	T *p = T::create();
 	p->setAnchorPoint(anchor);
@@ -100,20 +100,20 @@ T* TpCreate::create( CCPoint position, CCPoint anchor )
 }
 
 template< typename T >
-T* TpCreate::frameMenu( const char *normal, const char *over, CCObject* target, SEL_MenuHandler selector,
-					   CCPoint position, int tag )
+T* TpCreate::frameMenu( const char *normal, const char *over, Ref* target, SEL_MenuHandler selector,
+					   Point position, int tag )
 {
 	return frameMenu<T>( normal, over, over, target, selector, position, tag );
 }
 
 template< typename T >
-T* TpCreate::frameMenu( const char *normal, const char *over, const char *disable, CCObject* target, SEL_MenuHandler selector,
-					   CCPoint position, int tag )
+T* TpCreate::frameMenu( const char *normal, const char *over, const char *disable, Ref* target, SEL_MenuHandler selector,
+					   Point position, int tag )
 {
 	T* p = T::create(
-		frameSprite<CCSprite>(normal,CCPointZero,CCPointZero),
-		frameSprite<CCSprite>(over	,CCPointZero,CCPointZero),
-		frameSprite<CCSprite>(disable,CCPointZero,CCPointZero),
+		frameSprite<Sprite>(normal,Point::ZERO,Point::ZERO),
+		frameSprite<Sprite>(over	,Point::ZERO,Point::ZERO),
+		frameSprite<Sprite>(disable,Point::ZERO,Point::ZERO),
 		target, selector );
 	p->setTag(tag);
 	p->setPosition(position);
@@ -121,7 +121,7 @@ T* TpCreate::frameMenu( const char *normal, const char *over, const char *disabl
 }
 
 template< typename T >
-T* TpCreate::fileSprite( const char *fileName, CCPoint position, CCPoint anchor )
+T* TpCreate::fileSprite( const char *fileName, Point position, Point anchor )
 {
 	T *p = T::create(fileName);
 	p->setAnchorPoint(anchor);
@@ -130,7 +130,7 @@ T* TpCreate::fileSprite( const char *fileName, CCPoint position, CCPoint anchor 
 }
 
 template< typename T >
-T* TpCreate::frameSprite( const char *frameName, CCPoint position, CCPoint anchor)
+T* TpCreate::frameSprite( const char *frameName, Point position, Point anchor)
 {
 	T *p = T::createWithSpriteFrameName(frameName);
 	p->setPosition(position);
