@@ -20,6 +20,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
         else glview = GLView::create("MJGame");
         director->setOpenGLView(glview);
     }
+    auto designSize = Size(960, 480);
+    glview->setDesignResolutionSize(designSize.width, designSize.height, ResolutionPolicy::NO_BORDER);
 
     // turn on display FPS
     director->setDisplayStats(true);
@@ -31,6 +33,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     auto scene = HelloWorld::scene();
+
+	//console telnet
+//	auto console = director->getConsole();
+//	console->listenOnTCP(5678);
 
     // run
     director->runWithScene(scene);

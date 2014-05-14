@@ -874,9 +874,9 @@ void Widget::copyProperties(Widget *widget)
     setColor(widget->getColor());
     setOpacity(widget->getOpacity());
     Map<int, LayoutParameter*>& layoutParameterDic = widget->_layoutParameterDictionary;
-    for (auto iter = layoutParameterDic.begin(); iter != layoutParameterDic.end(); ++iter)
+    for (auto iter:layoutParameterDic)
     {
-        setLayoutParameter(iter->second->clone());
+        setLayoutParameter(iter.second->clone());
     }
     onSizeChanged();
 }

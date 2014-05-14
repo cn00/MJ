@@ -4446,7 +4446,6 @@
 		3E70BC5C1918B29100C44526 /* 3d */ = {
 			isa = PBXGroup;
 			children = (
-				3E70BDA11918B46500C44526 /* Mesh */,
 				3E70BC5D1918B29100C44526 /* AnimationValue.cpp */,
 				3E70BC5E1918B29100C44526 /* AnimationValue.h */,
 				3E70BC5F1918B29100C44526 /* AttachNode.cpp */,
@@ -4562,13 +4561,6 @@
 			);
 			name = 3d;
 			path = ../cocos/3d;
-			sourceTree = "<group>";
-		};
-		3E70BDA11918B46500C44526 /* Mesh */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Mesh;
 			sourceTree = "<group>";
 		};
 		3ECEC8FF19139537006BFAEA /* documents */ = {

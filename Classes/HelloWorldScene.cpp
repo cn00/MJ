@@ -1,6 +1,11 @@
 #include "HelloWorldScene.h"
 #include "SqlShell.h"
+#include "HallScene.h"
 
+enum Tag{
+	_close_,
+	_hall_,
+};
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
@@ -21,18 +26,25 @@ bool HelloWorld::init()
     sprite->setPosition(Point(visibleSize/2));
     this->addChild(sprite, 0);
 	
+
+    auto menu = Menu::create();
+    menu->setPosition(Point::ZERO);
+    this->addChild(menu, 1);
+	
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
                                            CC_CALLBACK_1(HelloWorld::menuCallback, this));
-    
 	closeItem->setPosition(Point(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
-
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Point::ZERO);
-    this->addChild(menu, 1);
-
+	closeItem->setTag(_close_);
+	menu->addChild(closeItem);
+	
+	auto hall = MenuItemFont::create("HALL", CC_CALLBACK_1(HelloWorld::menuCallback, this));
+	hall->setPosition(400, 50);
+	hall->setTag(_hall_);
+	menu->addChild(hall);
+	
     auto label = Label::create("Hello World", "Arial", 24);
     label->setPosition(Point(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - label->getContentSize().height));
@@ -44,47 +56,37 @@ bool HelloWorld::init()
 	auto sqll = SqlShell::create();
 	this->addChild(sqll);
 	
-	for(auto i:{1, 2, 3}){
-		auto card = Card::create("CloseNorma.png");
-		card->setPosition(VisibleRect::center()*i/2);
+	const string cardmj[] = {
+		"🀀", "🀁", "🀂", "🀃", "🀄︎", "🀅", "🀆",//*4
+		"🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏",//*4
+		"🀐", "🀑", "🀒", "🀓", "🀔", "🀕", "🀖", "🀗", "🀘",//*4
+		"🀙", "🀚", "🀛", "🀜", "🀝", "🀞", "🀟", "🀠", "🀡",//*4
+		"🀢", "🀣", "🀤", "🀥", "🀦", "🀧", "🀨", "🀩", "🀪",//*4
+		"🀫",//4*43 = 172
+		/*
+		 13*4
+		 */
+	};
+	const string cardpk[] = {
+		"🂠",
+		"🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂬", "🂭", "🂮",
+		"🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂼", "🂽", "🂾",
+		"🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃌", "🃍", "🃎", "🃏",
+		"🃑", "🃒", "🃓", "🃔", "🃕", "🃖", "🃗", "🃘", "🃙", "🃚", "🃛", "🃜", "🃝", "🃞", "🃟"
+	};
+	map<string, Card*> cards;
+	for(auto i:cardmj){
+		auto card = Card::create("🀀");
+		cocos2d::Texture2D* text = new Texture2D;
+		text->autorelease();
+		text->initWithString(i.c_str(), "seguisym.ttf", 64);
+		card->initWithTexture(text);
+		card->setPosition(Point(rand()%320, rand()%480));
+		card->setColor(Color3B(rand()%255, rand()%255, rand()%255));
 		this->addChild(card);
+		
+		cards.insert(make_pair(i, card));
 	}
-/*
-	label = Label::create("🀀🀁🀂🀃🀄🀅🀆", "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setPosition(VisibleRect::bottom());
-	this->addChild(label);
-	
-	label = Label::create("🀇🀈🀉🀊🀋🀌🀍🀎🀏", "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setRotation(90);
-	label->setPosition(VisibleRect::left());
-	this->addChild(label);
-	
-	label = Label::create("🀐🀑🀒🀓🀔🀕🀖🀗🀘", "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setRotation(-90);
-	label->setPosition(VisibleRect::right());
-	this->addChild(label);
-	
-	label = Label::create("🀙🀚🀛🀜🀝🀞🀟🀠🀡", "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setRotation(-180);
-	label->setPosition(VisibleRect::top()-Point(0, 100));
-	this->addChild(label);
-	
-	label = Label::create("🀢🀣🀤🀥🀦🀧🀨🀩🀪🀫", "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setRotation(-180);
-	label->setPosition(VisibleRect::center());
-	this->addChild(label);
-*/
-	char c[] = {char(0x00), char(0x01), char(0xf0), char(0x04),};
-	label = Label::create( c, "", 64);
-	label->setAnchorPoint(Point::ANCHOR_MIDDLE_BOTTOM);
-	label->setRotation(-180);
-	label->setPosition(VisibleRect::center());
-	this->addChild(label);
 	
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("music/ppxhn.mp3", true);
 	
@@ -138,17 +140,27 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *event)
 
 void HelloWorld::menuCallback(Ref* pSender)
 {
-	_eventDispatcher->removeEventListenersForTarget(this);
-
+	Tag tag = Tag(((Node*)pSender)->getTag());
+	switch (tag) {
+		case _close_:{
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
-    return;
+			MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
+			return;
 #endif
-
-    Director::getInstance()->end();
-
+			
+			Director::getInstance()->end();
+			
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
+			exit(0);
 #endif
+			break;}
+		case _hall_:{
+			Director::getInstance()->replaceScene(HallScene::scene());
+			break;}
+			
+		default:
+			break;
+	}
+	_eventDispatcher->removeEventListenersForTarget(this);
 	
 }
